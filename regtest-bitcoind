@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# DATA_DIR should be this script location plus tmp/bitcoin
+DATA_DIR="$(cd "$(dirname "$0")" && pwd)/tmp/bitcoin"
+
+# Pass args to bitcoind
+bitcoind -datadir="$DATA_DIR" -conf="$DATA_DIR/bitcoin.conf" "$@"

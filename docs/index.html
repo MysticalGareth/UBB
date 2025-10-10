@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UBB Indexer</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- Full-page canvas -->
+  <canvas id="billboard-canvas"></canvas>
+
+  <!-- Floating overlay controls at top -->
+  <div id="top-overlay" class="top-overlay">
+    <div class="overlay-header">
+      <h1>The Unstoppable Bitcoin Billboard</h1>
+      <span id="environment-badge" class="environment">Loading...</span>
+    </div>
+    
+    <div class="overlay-controls">
+      <button id="toggle-details" class="control-btn">📊 Technical Stuff</button>
+      <button id="show-plots" class="control-btn">📋 Plot List</button>
+      <button id="reset-view" class="control-btn">🎯 Reset View</button>
+      
+      <div class="coordinate-nav">
+        <label>Go to:</label>
+        <input type="number" id="nav-x" placeholder="X" min="0" max="65535">
+        <input type="number" id="nav-y" placeholder="Y" min="0" max="65535">
+        <button id="nav-go" class="control-btn">Go</button>
+      </div>
+      
+      <div class="canvas-stats">
+        <span id="zoom-display">Zoom: 100%</span>
+        <span id="position-display">Position: (0, 0)</span>
+        <span id="visible-plots">Visible: 0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Collapsible technical details panel -->
+  <div id="technical-details" class="technical-details hidden">
+    <div class="details-header">
+      <h2>Technical Details</h2>
+      <button id="close-details" class="close-btn">&times;</button>
+    </div>
+    <div id="details-content" class="details-content">
+      <!-- Will be populated by JavaScript -->
+    </div>
+  </div>
+
+  <!-- Speech bubble tooltip for plot info -->
+  <div id="plot-tooltip" class="plot-tooltip hidden">
+    <div class="tooltip-content">
+      <div id="tooltip-owner"></div>
+      <div id="tooltip-uri"></div>
+    </div>
+  </div>
+
+  <!-- Modal for plot list with search -->
+  <div id="plot-list-modal" class="modal">
+    <div class="modal-content plot-list-content">
+      <div class="modal-header">
+        <h2>Plot List</h2>
+        <button class="modal-close" id="close-plot-list">&times;</button>
+      </div>
+      
+      <div class="search-controls">
+        <input type="text" id="search-owner" placeholder="Search by owner address..." class="search-input">
+        <input type="text" id="search-txid" placeholder="Search by claim txid..." class="search-input">
+        <div class="filter-stats">
+          <span id="filter-count">0 plots</span>
+        </div>
+      </div>
+      
+      <div id="plot-list-body" class="plot-list-body">
+        <!-- Will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

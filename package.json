@@ -1,0 +1,71 @@
+{
+  "name": "ubb",
+  "version": "1.0.0",
+  "description": "Unstoppable Bitcoin Billboard (UBB) Protocol Validator",
+  "main": "dist/ubb-validator.js",
+  "scripts": {
+    "build": "tsc && npm run build:indexer-web",
+    "build:backend": "tsc",
+    "build:docs": "node esbuild.config.js",
+    "build:indexer-web": "node esbuild.indexer-web.config.js",
+    "build:indexer-web-static": "ts-node scripts/build-static-indexer.ts",
+    "start": "ts-node src/ubb-validator.ts",
+    "indexer": "ts-node src/indexer/cli.ts --",
+    "indexer:gh-pages": "ts-node scripts/run-indexer-for-gh-pages.ts",
+    "indexer-web": "ts-node src/indexer-web/backend/server.ts",
+    "serve:static": "npx serve docs",
+    "populate": "ts-node scripts/populate-billboard.ts",
+    "test-states": "ts-node scripts/test-all-plot-states.ts",
+    "make-claim": "ts-node scripts/make-claim.ts",
+    "make-retry-claim": "ts-node scripts/make-retry-claim.ts",
+    "make-update": "ts-node scripts/make-update.ts",
+    "make-transfer": "ts-node scripts/make-transfer.ts",
+    "wallet": "ts-node src/wallet-cli.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MysticalGareth/UBB.git"
+  },
+  "keywords": [
+    "bitcoin",
+    "bmp",
+    "blockchain",
+    "nft",
+    "protocol"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/MysticalGareth/UBB/issues"
+  },
+  "homepage": "https://github.com/MysticalGareth/UBB#readme",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "bitcore-lib": "^8.25.0",
+    "bmp-js": "^0.1.0",
+    "cbor-x": "^1.6.0",
+    "cborg": "^1.10.2",
+    "express": "^4.18.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20.0.0",
+    "assert": "^2.1.0",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.1",
+    "esbuild": "^0.19.0",
+    "events": "^3.3.0",
+    "jest": "^30.2.0",
+    "process": "^0.11.10",
+    "stream-browserify": "^3.0.0",
+    "ts-jest": "^29.4.4",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0",
+    "url": "^0.11.4"
+  }
+}

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UBB Claim Verifier</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: rgba(26, 26, 46, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #a0a0a0;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #00d4ff;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #00d4ff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .help-text {
+            font-size: 12px;
+            color: #a0a0a0;
+            margin-top: 5px;
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #00d4ff;
+            color: #1a1a2e;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background: #00b8e6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .result-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .result-section.hidden {
+            display: none;
+        }
+        
+        .success-box {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            border-radius: 6px;
+            padding: 20px;
+        }
+        
+        .error-box {
+            background: rgba(255, 82, 82, 0.1);
+            border: 1px solid rgba(255, 82, 82, 0.3);
+            border-radius: 6px;
+            padding: 20px;
+        }
+        
+        .result-label {
+            color: #4caf50;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .error-label {
+            color: #ff5252;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .data-grid {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 12px 20px;
+            font-size: 14px;
+        }
+        
+        .data-label {
+            color: #00d4ff;
+            font-weight: 500;
+        }
+        
+        .data-value {
+            color: #e0e0e0;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+        }
+        
+        .data-value.success {
+            color: #4caf50;
+        }
+        
+        .error-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .error-list li {
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+            margin-bottom: 8px;
+            color: #ff5252;
+        }
+        
+        .error-list li:last-child {
+            margin-bottom: 0;
+        }
+        
+        .bmp-preview {
+            margin-top: 15px;
+            text-align: center;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .bmp-preview-label {
+            color: #00d4ff;
+            font-weight: 500;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .bmp-preview img {
+            max-width: 100%;
+            max-height: 300px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .bmp-info {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #a0a0a0;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .data-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .data-label {
+                margin-top: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 UBB Claim Verifier</h1>
+        <p class="subtitle"><a href="claim-builder.html" style="color: #00d4ff;">← Build CLAIM</a> | Verify and parse UBB v1 OP_RETURN hex data | <a href="ubb-transaction-validator.html" style="color: #00d4ff;">Validate Transaction →</a></p>
+        
+        <form id="verifyForm">
+            <div class="form-group">
+                <label for="hexInput">OP_RETURN Hex Data</label>
+                <textarea id="hexInput" name="hexInput" required placeholder="Paste hex string here (e.g., 13370101000000006042...)" spellcheck="false"></textarea>
+                <div class="help-text">Hex string should start with magic bytes: 1337</div>
+            </div>
+            
+            <button type="submit" id="submitBtn">Verify OP_RETURN</button>
+        </form>
+        
+        <div id="successSection" class="result-section hidden">
+            <div class="success-box">
+                <div class="result-label">✓ Valid UBB Transaction</div>
+                <div class="data-grid" id="dataGrid"></div>
+                <div id="bmpPreview" class="bmp-preview hidden"></div>
+            </div>
+        </div>
+        
+        <div id="errorSection" class="result-section hidden">
+            <div class="error-box">
+                <div class="error-label">✗ Invalid OP_RETURN Data</div>
+                <ul class="error-list" id="errorList"></ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Include bundled JavaScript -->
+    <script src="js/verifier.bundle.js"></script>
+    
+    <!-- Verification logic -->
+    <script>
+        // Wait for bundle to load
+        if (typeof window.UBBVerifier === 'undefined') {
+            console.error('UBBVerifier not loaded. Make sure to run: npm run build:browser');
+            alert('Error: UBBVerifier bundle not loaded. Please build the bundle first with: npm run build:browser');
+        }
+        
+        const form = document.getElementById('verifyForm');
+        const hexInput = document.getElementById('hexInput');
+        const successSection = document.getElementById('successSection');
+        const errorSection = document.getElementById('errorSection');
+        const dataGrid = document.getElementById('dataGrid');
+        const errorList = document.getElementById('errorList');
+        const bmpPreview = document.getElementById('bmpPreview');
+        
+        // Clear results
+        function clearResults() {
+            successSection.classList.add('hidden');
+            errorSection.classList.add('hidden');
+            dataGrid.innerHTML = '';
+            errorList.innerHTML = '';
+            bmpPreview.classList.add('hidden');
+            bmpPreview.innerHTML = '';
+        }
+        
+        // Add data row
+        function addDataRow(label, value, isSuccess = false) {
+            const labelEl = document.createElement('div');
+            labelEl.className = 'data-label';
+            labelEl.textContent = label + ':';
+            
+            const valueEl = document.createElement('div');
+            valueEl.className = 'data-value' + (isSuccess ? ' success' : '');
+            valueEl.textContent = value;
+            
+            dataGrid.appendChild(labelEl);
+            dataGrid.appendChild(valueEl);
+        }
+        
+        // Display BMP preview
+        function displayBmpPreview(bmpBuffer) {
+            const blob = new Blob([bmpBuffer], { type: 'image/bmp' });
+            const url = URL.createObjectURL(blob);
+            
+            bmpPreview.innerHTML = `
+                <div class="bmp-preview-label">BMP Preview:</div>
+                <img src="${url}" alt="BMP Preview">
+                <div class="bmp-info">Size: ${(bmpBuffer.length / 1024).toFixed(2)} KB</div>
+            `;
+            bmpPreview.classList.remove('hidden');
+        }
+        
+        // Form submission
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Clear previous results
+            clearResults();
+            
+            // Get hex input and clean it
+            let hexString = hexInput.value.trim();
+            
+            // Remove 0x prefix if present
+            if (hexString.startsWith('0x') || hexString.startsWith('0X')) {
+                hexString = hexString.substring(2);
+            }
+            
+            // Remove whitespace
+            hexString = hexString.replace(/\s+/g, '');
+            
+            // Validate hex string
+            if (!/^[0-9a-fA-F]*$/.test(hexString)) {
+                errorSection.classList.remove('hidden');
+                errorList.innerHTML = '<li>Invalid hex string: contains non-hexadecimal characters</li>';
+                return;
+            }
+            
+            if (hexString.length === 0) {
+                errorSection.classList.remove('hidden');
+                errorList.innerHTML = '<li>Hex string cannot be empty</li>';
+                return;
+            }
+            
+            if (hexString.length % 2 !== 0) {
+                errorSection.classList.remove('hidden');
+                errorList.innerHTML = '<li>Hex string must have even length</li>';
+                return;
+            }
+            
+            // Convert hex to buffer
+            try {
+                const bytes = new Uint8Array(hexString.length / 2);
+                for (let i = 0; i < hexString.length; i += 2) {
+                    bytes[i / 2] = parseInt(hexString.substring(i, i + 2), 16);
+                }
+                const buffer = Buffer.from(bytes);
+                
+                // Parse with UBBOpReturnData
+                const parsed = new window.UBBVerifier.UBBOpReturnData(buffer);
+                
+                // Also validate BMP data if present
+                let bmpValidator = null;
+                if (parsed.isValid && parsed.bmpData !== null && parsed.bmpData.length > 0) {
+                    bmpValidator = new window.UBBVerifier.UBBBMP(parsed.bmpData);
+                    if (!bmpValidator.isValid) {
+                        // BMP validation failed - add errors
+                        parsed.errors.push(...bmpValidator.validationErrors);
+                    }
+                }
+                
+                if (parsed.isValid && (!bmpValidator || bmpValidator.isValid)) {
+                    // Success! Display parsed data
+                    addDataRow('Valid', 'Yes', true);
+                    addDataRow('Magic Bytes', parsed.magicBytes.toString('hex'));
+                    addDataRow('Version', '0x' + parsed.version.toString(16).padStart(2, '0'));
+                    addDataRow('Transaction Type', `${parsed.transactionTypeString} (0x${parsed.transactionType.toString(16).padStart(2, '0')})`);
+                    addDataRow('X Coordinate', parsed.x0.toString());
+                    addDataRow('Y Coordinate', parsed.y0.toString());
+                    
+                    // Show URI if present
+                    if (parsed.uri !== null) {
+                        addDataRow('URI', parsed.uri || '(empty string)');
+                    }
+                    
+                    // Show BMP info if present
+                    if (parsed.bmpData !== null) {
+                        addDataRow('BMP Size', `${parsed.bmpData.length.toLocaleString()} bytes`);
+                        
+                        // Display BMP preview
+                        displayBmpPreview(parsed.bmpData);
+                    }
+                    
+                    addDataRow('Total Size', `${buffer.length.toLocaleString()} bytes`);
+                    
+                    successSection.classList.remove('hidden');
+                    successSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    // Invalid! Display errors
+                    parsed.errors.forEach(error => {
+                        const li = document.createElement('li');
+                        li.textContent = error;
+                        errorList.appendChild(li);
+                    });
+                    
+                    errorSection.classList.remove('hidden');
+                    errorSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            } catch (error) {
+                errorSection.classList.remove('hidden');
+                errorList.innerHTML = `<li>Failed to parse hex data: ${error.message}</li>`;
+                errorSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        });
+    </script>
+</body>
+</html>

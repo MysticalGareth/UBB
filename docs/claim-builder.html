@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UBB Claim Builder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: rgba(26, 26, 46, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #a0a0a0;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #00d4ff;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .label-optional {
+            color: #a0a0a0;
+            font-weight: 400;
+            font-size: 12px;
+        }
+        
+        input[type="number"],
+        input[type="text"],
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="number"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #00d4ff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        input[type="file"] {
+            padding: 10px;
+            cursor: pointer;
+        }
+        
+        input[type="file"]::file-selector-button {
+            background: #00d4ff;
+            color: #1a1a2e;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+        
+        input[type="file"]::file-selector-button:hover {
+            background: #00b8e6;
+        }
+        
+        .help-text {
+            font-size: 12px;
+            color: #a0a0a0;
+            margin-top: 5px;
+        }
+        
+        .error-message {
+            background: rgba(255, 82, 82, 0.1);
+            border: 1px solid rgba(255, 82, 82, 0.3);
+            color: #ff5252;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-top: 8px;
+            font-size: 13px;
+        }
+        
+        .error-list {
+            margin: 5px 0 0 20px;
+        }
+        
+        .error-list li {
+            margin-top: 3px;
+        }
+        
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #00d4ff;
+            color: #1a1a2e;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background: #00b8e6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .result-section.hidden {
+            display: none;
+        }
+        
+        .success-box {
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid rgba(76, 175, 80, 0.3);
+            border-radius: 6px;
+            padding: 20px;
+        }
+        
+        .result-label {
+            color: #4caf50;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .byte-count {
+            color: #a0a0a0;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+        
+        .hex-output {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #00ff88;
+            word-break: break-all;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 12px;
+        }
+        
+        .copy-button {
+            background: #4caf50;
+            padding: 10px 20px;
+            width: auto;
+            margin-top: 0;
+        }
+        
+        .copy-button:hover {
+            background: #45a049;
+        }
+        
+        .copy-button.copied {
+            background: #66bb6a;
+        }
+        
+        .bmp-preview {
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .bmp-preview img {
+            max-width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .bmp-info {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #a0a0a0;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 UBB Claim Builder</h1>
+        <p class="subtitle">Build UBB v1 CLAIM transaction OP_RETURN payloads | <a href="ubb-verifier.html" style="color: #00d4ff;">Verify OP_RETURN</a> | <a href="ubb-transaction-validator.html" style="color: #00d4ff;">Validate Transaction →</a></p>
+        
+        <form id="claimForm">
+            <div class="form-group">
+                <label for="xCoord">X Coordinate</label>
+                <input type="number" id="xCoord" name="x" min="0" max="65534" required>
+                <div class="help-text">Valid range: 0 - 65534</div>
+                <div id="xError" class="error-message hidden"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="yCoord">Y Coordinate</label>
+                <input type="number" id="yCoord" name="y" min="0" max="65534" required>
+                <div class="help-text">Valid range: 0 - 65534</div>
+                <div id="yError" class="error-message hidden"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="uri">
+                    URI 
+                    <span class="label-optional">(optional)</span>
+                </label>
+                <input type="text" id="uri" name="uri" placeholder="https://example.com/image.png">
+                <div class="help-text">Optional URI string (e.g., IPFS link, HTTP URL)</div>
+                <div id="uriError" class="error-message hidden"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="bmpFile">BMP File</label>
+                <input type="file" id="bmpFile" name="bmpFile" accept=".bmp" required>
+                <div class="help-text">Must be 24-bit or 32-bit uncompressed BMP</div>
+                <div id="bmpError" class="error-message hidden"></div>
+                <div id="bmpPreview" class="bmp-preview hidden"></div>
+            </div>
+            
+            <button type="submit" id="submitBtn">Build Claim OP_RETURN</button>
+        </form>
+        
+        <div id="resultSection" class="result-section hidden">
+            <div class="success-box">
+                <div class="result-label">✓ OP_RETURN Hex (ready to use):</div>
+                <div class="byte-count" id="byteCount"></div>
+                <div class="hex-output" id="hexOutput"></div>
+                <button class="copy-button" id="copyBtn">Copy to Clipboard</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Include bundled JavaScript -->
+    <script src="js/claim-builder.bundle.js"></script>
+    
+    <!-- Form logic -->
+    <script>
+        // Wait for bundle to load
+        if (typeof window.UBBClaimBuilder === 'undefined') {
+            console.error('UBBClaimBuilder not loaded. Make sure to run: npm run build:browser');
+            alert('Error: UBBClaimBuilder bundle not loaded. Please build the bundle first with: npm run build:browser');
+        }
+        
+        const form = document.getElementById('claimForm');
+        const resultSection = document.getElementById('resultSection');
+        const hexOutput = document.getElementById('hexOutput');
+        const copyBtn = document.getElementById('copyBtn');
+        const bmpFileInput = document.getElementById('bmpFile');
+        const bmpPreview = document.getElementById('bmpPreview');
+        
+        // Clear all error messages
+        function clearErrors() {
+            ['xError', 'yError', 'uriError', 'bmpError'].forEach(id => {
+                const el = document.getElementById(id);
+                el.textContent = '';
+                el.classList.add('hidden');
+            });
+        }
+        
+        // Display errors
+        function displayErrors(errors) {
+            Object.keys(errors).forEach(field => {
+                const errorEl = document.getElementById(`${field}Error`);
+                if (errorEl && errors[field] && errors[field].length > 0) {
+                    if (errors[field].length === 1) {
+                        errorEl.textContent = errors[field][0];
+                    } else {
+                        errorEl.innerHTML = '<ul class="error-list">' + 
+                            errors[field].map(e => `<li>${e}</li>`).join('') + 
+                            '</ul>';
+                    }
+                    errorEl.classList.remove('hidden');
+                }
+            });
+        }
+        
+        // BMP file preview
+        bmpFileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const blob = new Blob([event.target.result], { type: 'image/bmp' });
+                    const url = URL.createObjectURL(blob);
+                    bmpPreview.innerHTML = `
+                        <img src="${url}" alt="BMP Preview" style="max-height: 200px;">
+                        <div class="bmp-info">File: ${file.name} (${(file.size / 1024).toFixed(2)} KB)</div>
+                    `;
+                    bmpPreview.classList.remove('hidden');
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        });
+        
+        // Form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Clear previous errors and results
+            clearErrors();
+            resultSection.classList.add('hidden');
+            
+            // Get form values
+            const x = parseInt(document.getElementById('xCoord').value, 10);
+            const y = parseInt(document.getElementById('yCoord').value, 10);
+            const uri = document.getElementById('uri').value.trim();
+            const bmpFile = bmpFileInput.files[0];
+            
+            if (!bmpFile) {
+                displayErrors({ bmp: ['Please select a BMP file'] });
+                return;
+            }
+            
+            // Read BMP file as hex
+            try {
+                const arrayBuffer = await bmpFile.arrayBuffer();
+                const uint8Array = new Uint8Array(arrayBuffer);
+                const bmpHex = Array.from(uint8Array)
+                    .map(b => b.toString(16).padStart(2, '0'))
+                    .join('');
+                
+                // Build the claim OP_RETURN
+                const result = uri 
+                    ? window.UBBClaimBuilder.buildClaimOpReturnHex(x, y, uri, bmpHex)
+                    : window.UBBClaimBuilder.buildClaimOpReturnHex(x, y, bmpHex);
+                
+                if (result.ok) {
+                    // Success! Show the result
+                    hexOutput.textContent = result.hex;
+                    
+                    // Show byte count
+                    const byteCount = result.hex.length / 2;
+                    document.getElementById('byteCount').textContent = `Size: ${byteCount.toLocaleString()} bytes`;
+                    
+                    resultSection.classList.remove('hidden');
+                    
+                    // Scroll to result
+                    resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    // Show validation errors
+                    displayErrors(result.errors);
+                }
+            } catch (error) {
+                displayErrors({ 
+                    bmp: [`Failed to read BMP file: ${error.message}`] 
+                });
+            }
+        });
+        
+        // Copy to clipboard
+        copyBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(hexOutput.textContent);
+                copyBtn.textContent = '✓ Copied!';
+                copyBtn.classList.add('copied');
+                
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy to Clipboard';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            } catch (error) {
+                alert('Failed to copy to clipboard');
+            }
+        });
+    </script>
+</body>
+</html>

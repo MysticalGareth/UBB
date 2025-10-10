@@ -1,0 +1,12 @@
+/data/
+node_modules
+dist
+tests/test-data
+.wallets
+.env
+tmp
+coverage
+tsconfig.tsbuildinfo
+docs/data/mainnet/rawblock
+docs/data/regtest/
+docs/data/testnet/
