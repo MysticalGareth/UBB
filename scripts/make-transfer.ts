@@ -178,7 +178,6 @@ async function main() {
     console.log(`🔧 Setting up regtest orchestrator...`);
     const orchestrator = await setupRegtestOrchestrator({
       network,
-      blockSource: 'rpc',
       rpcUrl,
       walletName,
       walletPassphrase,
@@ -218,7 +217,6 @@ async function main() {
     console.log(`🔧 Setting up Bitcoin client...`);
     const client = await setupBitcoinClient({
       network,
-      blockSource: 'rpc',
       rpcUrl,
       walletName,
       walletPassphrase,
@@ -242,7 +240,7 @@ async function main() {
       console.log('📋 Next Steps:');
       console.log('  1. Wait for transaction to be confirmed in a block');
       console.log('  2. Run the indexer to track the transfer:');
-      console.log(`     npm run indexer -- <tip-hash> <genesis-hash> --network ${network} --block-source rpc`);
+      console.log(`     npm run indexer -- <tip-hash> <genesis-hash> --network ${network} --rpc-url <rpc-url>`);
       console.log('');
     } catch (error) {
       console.error('❌ Failed to create TRANSFER:', error instanceof Error ? error.message : 'unknown');

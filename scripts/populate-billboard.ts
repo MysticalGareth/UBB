@@ -234,7 +234,7 @@ async function main() {
   console.log(`📋 Next steps:`);
   console.log(`  1. Get the tip hash and genesis hash from your Bitcoin Core node`);
   console.log(`  2. Run the indexer:`);
-  console.log(`     npm run indexer -- <tip-hash> <genesis-hash> --network ${args.network} --block-source rpc`);
+  console.log(`     npm run indexer -- <tip-hash> <genesis-hash> --network ${args.network} --rpc-url <rpc-url>`);
   console.log(`  3. Start the web server:`);
   console.log(`     npm run web -- --env=${args.network} --genesis-hash=<genesis-hash> --port=3000`);
   console.log('');

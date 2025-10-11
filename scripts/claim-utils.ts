@@ -8,7 +8,6 @@ import { BitcoinRpcClient, WalletManager, TransactionBuilder } from '../src/bitc
 
 export interface ClaimConfig {
   network: 'regtest' | 'mainnet' | 'testnet';
-  blockSource: 'rpc' | 'api';
   rpcUrl?: string;
   walletName?: string;
   walletPassphrase?: string;
@@ -175,7 +174,7 @@ export async function getGenesisHash(client: BitcoinClient | RegtestOrchestrator
 export function printIndexingInstructions(tipHash: string, genesisHash: string, network: string = 'testnet'): void {
   console.log('\n📋 Next Steps:');
   console.log('  1. Run the indexer:');
-  console.log(`     npm run indexer -- ${tipHash} ${genesisHash} --network ${network} --block-source rpc`);
+  console.log(`     npm run indexer -- ${tipHash} ${genesisHash} --network ${network} --rpc-url <rpc-url>`);
   console.log('');
   console.log('  2. Start the web server:');
   console.log(`     npm run web -- --env=${network} --genesis-hash=${genesisHash} --port=3000`);

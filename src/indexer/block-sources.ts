@@ -12,65 +12,6 @@ export interface BlockSource {
   
   // Returns the block height for a given block hash
   getBlockHeight(blockHash: string): Promise<number>;
-} 
-
-export class ApiBlockSource implements BlockSource {
-  private readonly apiUrl: string;
-  private readonly network: 'mainnet' | 'testnet' | 'regtest';
-
-  constructor(apiUrl: string, network: 'mainnet' | 'testnet' | 'regtest') {
-    this.apiUrl = apiUrl;
-    this.network = network;
-    
-    // Validate that regtest is not used with API
-    if (network === 'regtest') {
-      throw new Error('Regtest network cannot use API block source. Use --block-source rpc instead.');
-    }
-  }
-
-  async getBlockHex(blockHash: string): Promise<string> {
-    if (this.network === 'testnet') {
-      const url = `${this.apiUrl}/block/${blockHash}/raw`;
-      const response = await axios.get(url, { responseType: 'arraybuffer' });
-      return Buffer.from(response.data).toString('hex');
-    }
-    const url = `${this.apiUrl}/rawblock/${blockHash}?format=hex`;
-    const response = await axios.get(url);
-    return response.data;
-  }
-
-  async getTipHash(): Promise<string> {
-    if (this.network === 'testnet') {
-      const url = `${this.apiUrl}/blocks/tip/hash`;
-      const response = await axios.get(url);
-      return response.data;
-    }
-    const url = `${this.apiUrl}/latestblock`;
-    const response = await axios.get(url);
-    return response.data.hash;
-  }
-
-  async getBlockHashAtHeight(height: number): Promise<string> {
-    if (this.network === 'testnet') {
-      const url = `${this.apiUrl}/block-height/${height}`;
-      const response = await axios.get(url);
-      return response.data;
-    }
-    const url = `${this.apiUrl}/block-height/${height}?format=json`;
-    const response = await axios.get(url);
-    return response.data.hash;
-  }
-  
-  async getBlockHeight(blockHash: string): Promise<number> {
-    if (this.network === 'testnet') {
-      const url = `${this.apiUrl}/block/${blockHash}`;
-      const response = await axios.get(url);
-      return response.data.height;
-    }
-    const url = `${this.apiUrl}/rawblock/${blockHash}`;
-    const response = await axios.get(url);
-    return response.data.height;
-  }
 }
 
 export class RpcBlockSource implements BlockSource {

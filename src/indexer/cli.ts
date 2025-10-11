@@ -15,11 +15,9 @@ const MAINNET_GENESIS = '000000000000000000010fa5bf8de1bff433e934e03ed671186592c
 
 interface CLIOptions {
   dataDir: string;
-  blockchainInfoUrl: string;
   maxRetries: number;
   retryDelay: number;
   network: 'mainnet' | 'testnet' | 'regtest';
-  blockSource: 'api' | 'rpc';
   rpcUrl: string;
   help: boolean;
   genesisFromHeight0: boolean;
@@ -28,11 +26,9 @@ interface CLIOptions {
 function parseArgs(args: string[]): { tipHash: string; ubbGenesisHash: string; options: CLIOptions } {
   const options: CLIOptions = {
     dataDir: './data',
-    blockchainInfoUrl: 'https://blockchain.info',
     maxRetries: 3,
     retryDelay: 1000,
     network: 'mainnet',
-    blockSource: 'rpc',
     rpcUrl: 'http://user:password@127.0.0.1:8332', // Default to mainnet port
     help: false,
     genesisFromHeight0: false
@@ -53,25 +49,11 @@ function parseArgs(args: string[]): { tipHash: string; ubbGenesisHash: string; o
       case '--data-dir':
         options.dataDir = args[++i];
         break;
-      case '--blockchain-info-url':
-        options.blockchainInfoUrl = args[++i];
-        break;
       case '--max-retries':
         options.maxRetries = parseInt(args[++i], 10);
         break;
       case '--retry-delay':
         options.retryDelay = parseInt(args[++i], 10);
-        break;
-      case '--block-source':
-        {
-          const source = args[++i];
-          if (source === 'api' || source === 'rpc') {
-            options.blockSource = source;
-          } else {
-            console.error(`Invalid block source: ${source}. Must be 'api' or 'rpc'`);
-            process.exit(1);
-          }
-        }
         break;
       case '--rpc-url':
         options.rpcUrl = args[++i];
@@ -134,12 +116,10 @@ ARGUMENTS:
 
 OPTIONS:
   --data-dir <dir>              Data directory for storing states and images (default: ./data)
-  --blockchain-info-url <url>   Blockchain.info API URL (default: https://blockchain.info)
   --max-retries <number>        Maximum number of retries for failed requests (default: 3)
   --retry-delay <ms>            Delay between retries in milliseconds (default: 1000)
   --network <network>           Bitcoin network: 'mainnet', 'testnet', or 'regtest' (default: mainnet)
-  --block-source <source>       Block source: 'api' or 'rpc' (default: rpc)
-  --rpc-url <url>               Bitcoin Core RPC URL (default: http://user:password@127.0.0.1:8332)
+  --rpc-url <url>               Bitcoin Core RPC URL (required, default: http://user:password@127.0.0.1:8332)
   --genesis-from-height-0       Use block height 0 (chain genesis) as UBB genesis block
   --help, -h                    Show this help message
 
@@ -150,9 +130,6 @@ EXAMPLES:
   # Same but with custom data directory
   ubb-indexer --rpc-url http://user:pass@127.0.0.1:8332 --data-dir /path/to/data
 
-  # Use API instead of RPC (not recommended for large blocks)
-  ubb-indexer
-
   # Testnet - genesis hash required
   ubb-indexer <testnet-genesis-hash> --network testnet --rpc-url http://user:pass@127.0.0.1:18332
 
@@ -160,7 +137,7 @@ EXAMPLES:
   ubb-indexer <regtest-genesis-hash> --network regtest --rpc-url http://user:pass@127.0.0.1:18443
 
   # Specify explicit tip hash
-  ubb-indexer 0000000000000000000123456789abcdef... 0000000000000000000987654321fedcba...
+  ubb-indexer 0000000000000000000123456789abcdef... 0000000000000000000987654321fedcba... --rpc-url http://user:pass@127.0.0.1:8332
 
 DESCRIPTION:
   The UBB Indexer processes Bitcoin blockchain data to build and maintain the UBB
@@ -223,11 +200,9 @@ async function main(): Promise<void> {
 
   const config: IndexerConfig = {
     dataDir: options.dataDir,
-    blockchainInfoUrl: options.blockchainInfoUrl,
     maxRetries: options.maxRetries,
     retryDelay: options.retryDelay,
     network: options.network,
-    blockSource: options.blockSource,
     rpcUrl: options.rpcUrl
   };
 
@@ -262,8 +237,7 @@ async function main(): Promise<void> {
   logInfo(`UBB genesis hash: ${ubbGenesisHash}`);
   logInfo(`Data directory: ${options.dataDir}/${options.network}`);
   logInfo(`Network: ${options.network}`);
-  logInfo(`Blockchain API: ${options.network === 'testnet' ? 'https://mempool.space/testnet/api' : options.network === 'regtest' ? 'N/A (RPC only)' : options.blockchainInfoUrl}`);
-  logInfo(`Block source: ${options.blockSource}${options.blockSource === 'rpc' ? ` (${options.rpcUrl})` : ''}`);
+  logInfo(`RPC URL: ${options.rpcUrl}`);
 
   try {
     const result = await indexer.index(tipHash, ubbGenesisHash);

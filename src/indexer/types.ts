@@ -42,12 +42,10 @@ export interface RouteToTip {
 
 export interface IndexerConfig {
   dataDir: string;
-  blockchainInfoUrl: string;
   maxRetries: number;
   retryDelay: number;
   network?: 'mainnet' | 'testnet' | 'regtest';
-  blockSource?: 'api' | 'rpc';
-  rpcUrl?: string; // e.g. http://user:password@127.0.0.1:18443
+  rpcUrl: string; // e.g. http://user:password@127.0.0.1:18443
   genesisHash?: string; // UBB genesis block hash - required for StateManager
 }
 

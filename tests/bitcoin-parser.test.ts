@@ -26,7 +26,7 @@ describe('BitcoinParser', () => {
   });
 
   beforeEach(() => {
-    parser = new BitcoinParser(tempDir, 'https://blockchain.info', 'testnet');
+    parser = new BitcoinParser(tempDir, 'testnet', 'http://user:password@127.0.0.1:18332');
   });
 
   /**
@@ -508,8 +508,8 @@ describe('BitcoinParser', () => {
     });
 
     test('should handle network subdirectories correctly', () => {
-      const testnetParser = new BitcoinParser(tempDir, 'https://blockchain.info', 'testnet');
-      const mainnetParser = new BitcoinParser(tempDir, 'https://blockchain.info', 'mainnet');
+      const testnetParser = new BitcoinParser(tempDir, 'testnet', 'http://user:password@127.0.0.1:18332');
+      const mainnetParser = new BitcoinParser(tempDir, 'mainnet', 'http://user:password@127.0.0.1:8332');
       
       const blockHash = 'same-hash';
       const testnetData = 'testnet-data';

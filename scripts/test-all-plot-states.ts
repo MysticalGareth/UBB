@@ -262,7 +262,7 @@ async function main() {
   console.log(`\n📋 Next steps:`);
   console.log(`  1. Get the current tip and genesis hash from your Bitcoin Core node`);
   console.log(`  2. Run the indexer:`);
-  console.log(`     npm run indexer -- <tip-hash> <genesis-hash> --network ${args.network} --block-source rpc --rpc-url ${args.rpcUrl}`);
+  console.log(`     npm run indexer -- <tip-hash> <genesis-hash> --network ${args.network} --rpc-url ${args.rpcUrl}`);
   console.log(`  3. Verify the state has the expected plot statuses`);
   console.log('');
 

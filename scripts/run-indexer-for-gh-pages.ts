@@ -19,14 +19,11 @@ This script runs the UBB indexer and builds the static site for GitHub Pages.
 It's pre-configured for mainnet and uses the hardcoded genesis hash.
 
 USAGE:
-  npm run indexer:gh-pages [-- <additional-indexer-args>]
+  npm run indexer:gh-pages -- --rpc-url <url> [additional-indexer-args]
 
 EXAMPLES:
-  # Run with defaults (RPC block source, requires local Bitcoin Core)
+  # Run with local Bitcoin Core node
   npm run indexer:gh-pages -- --rpc-url http://user:pass@localhost:8332
-
-  # Use API block source instead (not recommended - may have incomplete blocks)
-  npm run indexer:gh-pages -- --block-source api
 
   # Show help
   npm run indexer:gh-pages -- --help
@@ -34,10 +31,9 @@ EXAMPLES:
 HARDCODED VALUES:
   Network:      ${NETWORK}
   Data Dir:     ${DATA_DIR}
-  Block Source: rpc (default, can be overridden)
 
 NOTE: The mainnet UBB genesis hash is hardcoded in the indexer CLI, so you
-      don't need to specify it. Just provide your Bitcoin Core RPC URL.
+      only need to provide your Bitcoin Core RPC URL.
 `);
 }
 
@@ -90,7 +86,6 @@ async function main(): Promise<void> {
     '--',
     '--data-dir', DATA_DIR,
     '--network', NETWORK,
-    '--block-source', 'rpc',  // Default to RPC for complete block data
     ...userArgs
   ];
 

@@ -132,11 +132,9 @@ describe('UBB Indexer - Regtest End-to-End Tests', () => {
       // Create shared indexer instance (handles multiple genesis hashes)
     const indexerConfig: IndexerConfig = {
       dataDir,
-      blockchainInfoUrl: 'http://unused',
       maxRetries: 3,
       retryDelay: 1000,
-        network: 'testnet',
-      blockSource: 'rpc',
+      network: 'testnet',
       rpcUrl: getBitcoinRpcUrl()
     };
     indexer = new UBBIndexer(indexerConfig);
@@ -151,11 +149,9 @@ describe('UBB Indexer - Regtest End-to-End Tests', () => {
       // Recreate indexer to clear any cached state
       const indexerConfig: IndexerConfig = {
         dataDir,
-        blockchainInfoUrl: 'http://unused',
         maxRetries: 3,
         retryDelay: 1000,
         network: 'testnet',
-        blockSource: 'rpc',
         rpcUrl: getBitcoinRpcUrl()
       };
       indexer = new UBBIndexer(indexerConfig);

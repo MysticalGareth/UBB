@@ -34,7 +34,7 @@ Deploy as a static site on GitHub Pages. This requires no server infrastructure 
 
 2. **Run the indexer for GitHub Pages:**
    ```bash
-   npm run indexer:gh-pages
+   npm run indexer:gh-pages -- --rpc-url http://user:pass@localhost:8332
    ```
 
    This will:
@@ -68,11 +68,11 @@ To update with new blockchain data:
 
 ```bash
 # Run indexer and rebuild static site
-npm run indexer:gh-pages
+npm run indexer:gh-pages -- --rpc-url http://user:pass@localhost:8332
 
 # Or run steps separately:
-npm run indexer -- <genesis-hash> --data-dir=docs/data --network=mainnet
-npm run build:indexer-web-static -- --network=mainnet --genesis-hash=<hash>
+npm run indexer -- --rpc-url http://user:pass@localhost:8332 --data-dir=docs/data --network=mainnet
+npm run build:indexer-web-static -- --network=mainnet
 ```
 
 Then commit and push the changes in `docs/`.
@@ -82,11 +82,10 @@ Then commit and push the changes in `docs/`.
 The GitHub Pages deployment is pre-configured for:
 - **Network:** mainnet
 - **Genesis Hash:** `000000000000000000010fa5bf8de1bff433e934e03ed671186592c8c3560f6e`
-- **Block Source:** blockchain.info API (no Bitcoin node required)
 
-To use a different block source (e.g., Bitcoin Core RPC):
+You need to provide your Bitcoin Core RPC URL:
 ```bash
-npm run indexer:gh-pages -- --block-source rpc --rpc-url http://user:pass@localhost:8332
+npm run indexer:gh-pages -- --rpc-url http://user:pass@localhost:8332
 ```
 
 ### Option 2: Local Development Server

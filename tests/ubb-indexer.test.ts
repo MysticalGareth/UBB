@@ -17,9 +17,9 @@ describe('UBB Indexer', () => {
     testDataDir = path.join(__dirname, 'test-data');
     config = {
       dataDir: testDataDir,
-      blockchainInfoUrl: 'https://blockchain.info',
       maxRetries: 3,
-      retryDelay: 1000
+      retryDelay: 1000,
+      rpcUrl: 'http://user:password@127.0.0.1:18443'
     };
     indexer = new UBBIndexer(config);
   });

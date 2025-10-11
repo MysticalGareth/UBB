@@ -7,18 +7,16 @@ import * as fs from 'fs';
 import * as path from 'path';
 import axios from 'axios';
 import { BlockInfo, DeedUTXO } from './types';
-import { BlockSource, ApiBlockSource, RpcBlockSource } from './block-sources';
+import { BlockSource, RpcBlockSource } from './block-sources';
 import { UBBTransactionValidator } from '../validators/transaction-validator-shared';
 
 export class BitcoinParser {
   private readonly dataDir: string;
-  private readonly blockchainInfoUrl: string;
   private readonly network: string;
   private readonly blockSource: BlockSource;
 
-  constructor(dataDir: string, blockchainInfoUrl: string = 'https://blockchain.info', network: string = 'mainnet', blockSource?: 'api' | 'rpc', rpcUrl?: string) {
+  constructor(dataDir: string, network: string = 'mainnet', rpcUrl: string) {
     this.dataDir = dataDir;
-    this.blockchainInfoUrl = blockchainInfoUrl;
     this.network = network;
     
     // Configure bitcore-lib network
@@ -30,28 +28,11 @@ export class BitcoinParser {
       fs.mkdirSync(rawBlockDir, { recursive: true });
     }
 
-    // Select block source
-    if (blockSource === 'rpc') {
-      this.blockSource = new RpcBlockSource(
-        rpcUrl || 'http://user:password@127.0.0.1:18443',
-        (network as 'mainnet' | 'testnet' | 'regtest')
-      );
-    } else {
-      this.blockSource = new ApiBlockSource(this.getApiUrl(), network as 'mainnet' | 'testnet' | 'regtest');
-    }
-  }
-
-  /**
-   * Get the appropriate API URL for the network
-   */
-  private getApiUrl(): string {
-    if (this.network === 'testnet') {
-      return 'https://mempool.space/testnet/api';
-    }
-    if (this.network === 'regtest') {
-      throw new Error('Regtest network requires RPC block source. Use --block-source rpc --rpc-url <url>');
-    }
-    return this.blockchainInfoUrl;
+    // Create RPC block source
+    this.blockSource = new RpcBlockSource(
+      rpcUrl,
+      (network as 'mainnet' | 'testnet' | 'regtest')
+    );
   }
 
   /**

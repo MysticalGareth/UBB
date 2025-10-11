@@ -35,9 +35,7 @@ export class UBBIndexer {
     this.config = config;
     this.bitcoinParser = new BitcoinParser(
       config.dataDir,
-      config.blockchainInfoUrl,
       config.network || 'mainnet',
-      config.blockSource || 'api',
       config.rpcUrl
     );
     this.stateManager = null; // Created lazily in index() with genesis hash
