@@ -54,13 +54,20 @@ var init_ui_helpers = __esm({
     "use strict";
     UIHelpers = class {
       /**
+       * Set the network environment for generating explorer URLs
+       */
+      static setEnvironment(environment) {
+        this.environment = environment;
+      }
+      /**
        * Show speech bubble tooltip for a plot on the canvas
        */
       static showPlotTooltip(plot, screenX, screenY) {
         const tooltip = document.getElementById("plot-tooltip");
         const ownerEl = document.getElementById("tooltip-owner");
+        const txidEl = document.getElementById("tooltip-txid");
         const uriEl = document.getElementById("tooltip-uri");
-        if (!tooltip || !ownerEl || !uriEl)
+        if (!tooltip || !ownerEl || !txidEl || !uriEl)
           return;
         if (plot.status === "BRICKED") {
           ownerEl.textContent = "Owner: N/A (Bricked)";
@@ -69,13 +76,21 @@ var init_ui_helpers = __esm({
           ownerEl.textContent = `Owner: ${plot.owner}`;
           ownerEl.style.color = "#00ff00";
         }
+        const mempoolUrl = this.getMempoolUrl(plot.txid);
+        if (mempoolUrl) {
+          const shortTxid = plot.txid.substring(0, 8) + "..." + plot.txid.substring(plot.txid.length - 8);
+          txidEl.innerHTML = `TX: <a href="${mempoolUrl}" target="_blank" rel="noopener noreferrer" class="tooltip-link">${shortTxid} \u2197</a>`;
+        } else {
+          const shortTxid = plot.txid.substring(0, 8) + "..." + plot.txid.substring(plot.txid.length - 8);
+          txidEl.innerHTML = `<span style="color: #888;">TX: ${shortTxid}</span>`;
+        }
         if (plot.uri) {
-          uriEl.innerHTML = `<a href="${plot.uri}" target="_blank" rel="noopener noreferrer">${plot.uri} \u2197</a>`;
+          uriEl.innerHTML = `<a href="${plot.uri}" target="_blank" rel="noopener noreferrer" class="tooltip-link">${plot.uri} \u2197</a>`;
         } else {
           uriEl.innerHTML = '<span style="color: #888;">No URI</span>';
         }
         tooltip.style.left = `${screenX}px`;
-        tooltip.style.top = `${screenY - 120}px`;
+        tooltip.style.top = `${screenY - 140}px`;
         tooltip.classList.remove("hidden");
       }
       /**
@@ -90,10 +105,11 @@ var init_ui_helpers = __esm({
       /**
        * Show the plot list modal with search functionality
        */
-      static showPlotListModal(state, onPlotSelect, imageUrlGetter) {
+      static showPlotListModal(state, onPlotSelect, imageUrlGetter, environment = "mainnet") {
         this.allPlots = state.plots;
         this.onPlotSelected = onPlotSelect;
         this.imageUrlGetter = imageUrlGetter;
+        this.environment = environment;
         const modal = document.getElementById("plot-list-modal");
         if (!modal)
           return;
@@ -173,6 +189,17 @@ var init_ui_helpers = __esm({
         });
       }
       /**
+       * Get mempool.space URL for a transaction
+       */
+      static getMempoolUrl(txid) {
+        if (this.environment === "mainnet") {
+          return `https://mempool.space/tx/${txid}`;
+        } else if (this.environment === "testnet") {
+          return `https://mempool.space/testnet/tx/${txid}`;
+        }
+        return null;
+      }
+      /**
        * Create HTML for a single plot list item
        */
       static createPlotListItem(plot) {
@@ -180,6 +207,8 @@ var init_ui_helpers = __esm({
       <div><strong>URI:</strong> <code>${plot.uri}</code></div>
     ` : "";
         const imageUrl = this.imageUrlGetter ? this.imageUrlGetter(plot.txid) : "";
+        const mempoolUrl = this.getMempoolUrl(plot.txid);
+        const txidDisplay = mempoolUrl ? `<a href="${mempoolUrl}" target="_blank" rel="noopener noreferrer" class="txid-link">${plot.txid}</a>` : `<code>${plot.txid}</code>`;
         return `
       <div class="plot-list-item">
         <div class="plot-item-header">
@@ -191,7 +220,7 @@ var init_ui_helpers = __esm({
             <div><strong>Position:</strong> <code>(${plot.x0}, ${plot.y0})</code></div>
             <div><strong>Size:</strong> <code>${plot.width}\xD7${plot.height}</code></div>
             <div><strong>Owner:</strong> <code>${plot.owner}</code></div>
-            <div><strong>TX ID:</strong> <code>${plot.txid}</code></div>
+            <div><strong>TX ID:</strong> ${txidDisplay}</div>
             ${uriSection}
           </div>
         </div>
@@ -305,6 +334,7 @@ var init_ui_helpers = __esm({
     UIHelpers.allPlots = [];
     UIHelpers.onPlotSelected = null;
     UIHelpers.imageUrlGetter = null;
+    UIHelpers.environment = "mainnet";
   }
 });
 
@@ -742,6 +772,7 @@ var require_app = __commonJS({
         try {
           this.showLoading();
           const config = this.stateLoader.getConfig();
+          UIHelpers.setEnvironment(config.environment);
           this.updateHeader(config.environment);
           this.state = await this.stateLoader.loadTipState();
           this.hideLoading();
@@ -806,11 +837,12 @@ var require_app = __commonJS({
         if (showPlotsBtn) {
           showPlotsBtn.addEventListener("click", () => {
             if (this.state && this.canvas) {
+              const config = this.stateLoader.getConfig();
               UIHelpers.showPlotListModal(this.state, (plot) => {
                 if (this.canvas) {
                   this.canvas.centerOnPlot(plot);
                 }
-              }, (txid) => this.stateLoader.getImageUrl(txid));
+              }, (txid) => this.stateLoader.getImageUrl(txid), config.environment);
             }
           });
         }
@@ -886,11 +918,12 @@ var require_app = __commonJS({
             case "p":
             case "P":
               if (this.state) {
+                const config = this.stateLoader.getConfig();
                 UIHelpers.showPlotListModal(this.state, (plot) => {
                   if (this.canvas) {
                     this.canvas.centerOnPlot(plot);
                   }
-                }, (txid) => this.stateLoader.getImageUrl(txid));
+                }, (txid) => this.stateLoader.getImageUrl(txid), config.environment);
               }
               break;
           }

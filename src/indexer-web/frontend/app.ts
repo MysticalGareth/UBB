@@ -29,6 +29,9 @@ class App {
       // Get config from window.UBB_CONFIG
       const config = this.stateLoader.getConfig();
       
+      // Set environment for UI helpers (used for mempool.space links)
+      UIHelpers.setEnvironment(config.environment);
+      
       // Update header with environment
       this.updateHeader(config.environment);
       
@@ -113,11 +116,12 @@ class App {
     if (showPlotsBtn) {
       showPlotsBtn.addEventListener('click', () => {
         if (this.state && this.canvas) {
+          const config = this.stateLoader.getConfig();
           UIHelpers.showPlotListModal(this.state, (plot) => {
             if (this.canvas) {
               this.canvas.centerOnPlot(plot);
             }
-          }, (txid) => this.stateLoader.getImageUrl(txid));
+          }, (txid) => this.stateLoader.getImageUrl(txid), config.environment);
         }
       });
     }
@@ -210,11 +214,12 @@ class App {
         case 'p':
         case 'P':
           if (this.state) {
+            const config = this.stateLoader.getConfig();
             UIHelpers.showPlotListModal(this.state, (plot) => {
               if (this.canvas) {
                 this.canvas.centerOnPlot(plot);
               }
-            }, (txid) => this.stateLoader.getImageUrl(txid));
+            }, (txid) => this.stateLoader.getImageUrl(txid), config.environment);
           }
           break;
       }

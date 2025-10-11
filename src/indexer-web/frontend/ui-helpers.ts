@@ -4,6 +4,14 @@ export class UIHelpers {
   private static allPlots: PlotState[] = [];
   private static onPlotSelected: ((plot: PlotState) => void) | null = null;
   private static imageUrlGetter: ((txid: string) => string) | null = null;
+  private static environment: 'mainnet' | 'testnet' | 'regtest' = 'mainnet';
+
+  /**
+   * Set the network environment for generating explorer URLs
+   */
+  static setEnvironment(environment: 'mainnet' | 'testnet' | 'regtest'): void {
+    this.environment = environment;
+  }
 
   /**
    * Show speech bubble tooltip for a plot on the canvas
@@ -11,9 +19,10 @@ export class UIHelpers {
   static showPlotTooltip(plot: PlotState, screenX: number, screenY: number): void {
     const tooltip = document.getElementById('plot-tooltip');
     const ownerEl = document.getElementById('tooltip-owner');
+    const txidEl = document.getElementById('tooltip-txid');
     const uriEl = document.getElementById('tooltip-uri');
     
-    if (!tooltip || !ownerEl || !uriEl) return;
+    if (!tooltip || !ownerEl || !txidEl || !uriEl) return;
 
     // Update tooltip content - handle bricked plots specially
     if (plot.status === 'BRICKED') {
@@ -24,15 +33,25 @@ export class UIHelpers {
       ownerEl.style.color = '#00ff00';
     }
     
+    // Add transaction link
+    const mempoolUrl = this.getMempoolUrl(plot.txid);
+    if (mempoolUrl) {
+      const shortTxid = plot.txid.substring(0, 8) + '...' + plot.txid.substring(plot.txid.length - 8);
+      txidEl.innerHTML = `TX: <a href="${mempoolUrl}" target="_blank" rel="noopener noreferrer" class="tooltip-link">${shortTxid} ↗</a>`;
+    } else {
+      const shortTxid = plot.txid.substring(0, 8) + '...' + plot.txid.substring(plot.txid.length - 8);
+      txidEl.innerHTML = `<span style="color: #888;">TX: ${shortTxid}</span>`;
+    }
+    
     if (plot.uri) {
-      uriEl.innerHTML = `<a href="${plot.uri}" target="_blank" rel="noopener noreferrer">${plot.uri} ↗</a>`;
+      uriEl.innerHTML = `<a href="${plot.uri}" target="_blank" rel="noopener noreferrer" class="tooltip-link">${plot.uri} ↗</a>`;
     } else {
       uriEl.innerHTML = '<span style="color: #888;">No URI</span>';
     }
     
     // Position the tooltip above the cursor
     tooltip.style.left = `${screenX}px`;
-    tooltip.style.top = `${screenY - 120}px`;
+    tooltip.style.top = `${screenY - 140}px`;
     
     // Show tooltip
     tooltip.classList.remove('hidden');
@@ -51,10 +70,11 @@ export class UIHelpers {
   /**
    * Show the plot list modal with search functionality
    */
-  static showPlotListModal(state: StateData, onPlotSelect: (plot: PlotState) => void, imageUrlGetter: (txid: string) => string): void {
+  static showPlotListModal(state: StateData, onPlotSelect: (plot: PlotState) => void, imageUrlGetter: (txid: string) => string, environment: 'mainnet' | 'testnet' | 'regtest' = 'mainnet'): void {
     this.allPlots = state.plots;
     this.onPlotSelected = onPlotSelect;
     this.imageUrlGetter = imageUrlGetter;
+    this.environment = environment;
     
     const modal = document.getElementById('plot-list-modal');
     if (!modal) return;
@@ -158,6 +178,19 @@ export class UIHelpers {
   }
 
   /**
+   * Get mempool.space URL for a transaction
+   */
+  private static getMempoolUrl(txid: string): string | null {
+    if (this.environment === 'mainnet') {
+      return `https://mempool.space/tx/${txid}`;
+    } else if (this.environment === 'testnet') {
+      return `https://mempool.space/testnet/tx/${txid}`;
+    }
+    // No public explorer for regtest
+    return null;
+  }
+
+  /**
    * Create HTML for a single plot list item
    */
   private static createPlotListItem(plot: PlotState): string {
@@ -166,6 +199,12 @@ export class UIHelpers {
     ` : '';
     
     const imageUrl = this.imageUrlGetter ? this.imageUrlGetter(plot.txid) : '';
+    
+    // Create transaction link for mempool.space
+    const mempoolUrl = this.getMempoolUrl(plot.txid);
+    const txidDisplay = mempoolUrl 
+      ? `<a href="${mempoolUrl}" target="_blank" rel="noopener noreferrer" class="txid-link">${plot.txid}</a>`
+      : `<code>${plot.txid}</code>`;
     
     return `
       <div class="plot-list-item">
@@ -178,7 +217,7 @@ export class UIHelpers {
             <div><strong>Position:</strong> <code>(${plot.x0}, ${plot.y0})</code></div>
             <div><strong>Size:</strong> <code>${plot.width}×${plot.height}</code></div>
             <div><strong>Owner:</strong> <code>${plot.owner}</code></div>
-            <div><strong>TX ID:</strong> <code>${plot.txid}</code></div>
+            <div><strong>TX ID:</strong> ${txidDisplay}</div>
             ${uriSection}
           </div>
         </div>

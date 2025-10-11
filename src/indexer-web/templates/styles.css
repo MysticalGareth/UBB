@@ -304,19 +304,25 @@ body {
   word-break: break-all;
 }
 
+#tooltip-txid {
+  font-size: 0.9em;
+  color: #aaa;
+}
+
 #tooltip-uri {
   margin-top: 10px;
 }
 
-#tooltip-uri a {
+.tooltip-link {
   color: #667eea;
   text-decoration: underline;
   word-break: break-all;
   pointer-events: all;
+  transition: color 0.2s;
 }
 
-#tooltip-uri a:hover {
-  color: #8b9dff;
+.tooltip-link:hover {
+  color: #a78bfa;
 }
 
 /* Modal styles */
@@ -518,6 +524,22 @@ body {
   font-family: 'Courier New', monospace;
   font-size: 0.85em;
   word-break: break-all;
+}
+
+.plot-item-details .txid-link {
+  color: #667eea;
+  text-decoration: none;
+  font-family: 'Courier New', monospace;
+  font-size: 0.85em;
+  word-break: break-all;
+  border-bottom: 1px dotted #667eea;
+  transition: all 0.2s;
+}
+
+.plot-item-details .txid-link:hover {
+  color: #a78bfa;
+  border-bottom-color: #a78bfa;
+  background: rgba(102, 126, 234, 0.1);
 }
 
 /* Animations */
