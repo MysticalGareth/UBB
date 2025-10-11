@@ -1,4 +1,4 @@
-// UBB Indexer Configuration - Generated at 2025-10-11T06:53:38.193Z
+// UBB Indexer Configuration
 window.UBB_CONFIG = {
   environment: "mainnet",
   genesisHash: "000000000000000000010fa5bf8de1bff433e934e03ed671186592c8c3560f6e",
