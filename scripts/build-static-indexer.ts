@@ -152,7 +152,7 @@ async function main(): Promise<void> {
   
   // Generate config.js with relative paths (works for both root and project page deployments)
   const dataPath = `data/${options.network}/v1/${options.genesisHash}`;
-  const configJs = `// UBB Indexer Configuration - Generated at ${new Date().toISOString()}
+  const configJs = `// UBB Indexer Configuration
 window.UBB_CONFIG = {
   environment: "${options.network}",
   genesisHash: "${options.genesisHash}",
