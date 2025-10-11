@@ -1,0 +1,24 @@
+{
+  "blockHash": "0000000000000000000189aa65c20ee407604559a599d62d44585ab118c6a1af",
+  "parentHash": "000000000000000000010fa5bf8de1bff433e934e03ed671186592c8c3560f6e",
+  "blockHeight": 918513,
+  "plots": [
+    {
+      "txid": "156cc722280cd5dd544ebc830b93a577cefd19b74b241de09d4f2d2bc612f077",
+      "x0": 32588,
+      "y0": 32723,
+      "width": 360,
+      "height": 90,
+      "status": "PLACED",
+      "deedUTXO": "156cc722280cd5dd544ebc830b93a577cefd19b74b241de09d4f2d2bc612f077:1",
+      "imageHash": "0f6d6277c197fd2ff86db0bd5212a60d97a6dfce2c92e7e8f299c1ecb316d7a2",
+      "createdAt": 1760179216424,
+      "lastUpdated": 1760179216424,
+      "owner": "bc1qmq0nmyjm2x0lnwr6vdltu836fy0pj80yk09xka"
+    }
+  ],
+  "deedUTXOs": [
+    "156cc722280cd5dd544ebc830b93a577cefd19b74b241de09d4f2d2bc612f077:1"
+  ],
+  "transactionCount": 2967
+}
