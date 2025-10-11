@@ -11,6 +11,10 @@ The Unstoppable Bitcoin Billboard (UBB) is an authorityless, censorship-resistan
 - You can transfer the deed to someone else, update the art, or retry your claim if it was rejected because it overlapped with someone else's existing plot.
 - If deed is destroyed, the plot is **bricked forever** (cannot be updated or transferred).
 
+You can see the current billboard here:
+
+https://mysticalgareth.github.io/UBB/
+
 ### How to claim a plot
 
 ### UBB Wallet Scripts
@@ -313,7 +317,17 @@ npm test
 
 ### Indexer & Web Server
 
-TODO: Info about running indexer
+You can have the indexer run to the chain tip and generate a static site like so
+
+```
+npm run build:indexer-web
+npm run indexer:gh-pages -- --rpc-url "{url_to_your_node}"
+```
+
+You can then serve it locally:
+```
+npm run serve:static
+```
 
 
 ### Populating a regtest environment
