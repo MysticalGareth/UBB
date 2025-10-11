@@ -93,6 +93,14 @@ class App {
   private setupControls(): void {
     if (!this.state || !this.canvas) return;
     
+    // Show about modal
+    const showAboutBtn = document.getElementById('show-about');
+    if (showAboutBtn) {
+      showAboutBtn.addEventListener('click', () => {
+        UIHelpers.showAboutModal();
+      });
+    }
+    
     // Technical details toggle
     const toggleDetailsBtn = document.getElementById('toggle-details');
     if (toggleDetailsBtn) {

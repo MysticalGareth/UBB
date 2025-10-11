@@ -366,6 +366,78 @@ body {
   max-width: 900px;
 }
 
+.about-content {
+  max-width: 700px;
+}
+
+.about-body {
+  padding: 30px;
+  line-height: 1.6;
+}
+
+.about-body p {
+  margin-bottom: 20px;
+  font-size: 1.1em;
+  color: #ccc;
+}
+
+.about-section {
+  margin-bottom: 25px;
+}
+
+.about-section h3 {
+  color: #667eea;
+  margin-bottom: 12px;
+  font-size: 1.2em;
+}
+
+.about-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.about-section li {
+  padding: 8px 0;
+  padding-left: 24px;
+  position: relative;
+  color: #ddd;
+}
+
+.about-section li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: #667eea;
+  font-weight: bold;
+}
+
+.about-footer {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.github-link {
+  display: inline-block;
+  color: #667eea;
+  text-decoration: none;
+  font-size: 1.1em;
+  font-weight: 600;
+  padding: 12px 24px;
+  border: 2px solid #667eea;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.github-link:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
 .modal-header {
   display: flex;
   justify-content: space-between;

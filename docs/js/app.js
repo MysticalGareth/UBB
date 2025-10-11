@@ -133,6 +133,24 @@ var init_ui_helpers = __esm({
         }
       }
       /**
+       * Show the about modal
+       */
+      static showAboutModal() {
+        const modal = document.getElementById("about-modal");
+        if (modal) {
+          modal.classList.add("active");
+        }
+      }
+      /**
+       * Close the about modal
+       */
+      static closeAboutModal() {
+        const modal = document.getElementById("about-modal");
+        if (modal) {
+          modal.classList.remove("active");
+        }
+      }
+      /**
        * Setup search functionality for plot list
        */
       static setupPlotListSearch() {
@@ -245,9 +263,24 @@ var init_ui_helpers = __esm({
             }
           });
         }
+        const closeAboutBtn = document.getElementById("close-about");
+        if (closeAboutBtn) {
+          closeAboutBtn.addEventListener("click", () => {
+            this.closeAboutModal();
+          });
+        }
+        const aboutModal = document.getElementById("about-modal");
+        if (aboutModal) {
+          aboutModal.addEventListener("click", (e) => {
+            if (e.target.id === "about-modal") {
+              this.closeAboutModal();
+            }
+          });
+        }
         document.addEventListener("keydown", (e) => {
           if (e.key === "Escape") {
             this.closePlotListModal();
+            this.closeAboutModal();
             this.hidePlotTooltip();
           }
         });
@@ -819,6 +852,12 @@ var require_app = __commonJS({
       setupControls() {
         if (!this.state || !this.canvas)
           return;
+        const showAboutBtn = document.getElementById("show-about");
+        if (showAboutBtn) {
+          showAboutBtn.addEventListener("click", () => {
+            UIHelpers.showAboutModal();
+          });
+        }
         const toggleDetailsBtn = document.getElementById("toggle-details");
         if (toggleDetailsBtn) {
           toggleDetailsBtn.addEventListener("click", () => {

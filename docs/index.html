@@ -18,7 +18,7 @@
     </div>
     
     <div class="overlay-controls">
-      <button id="toggle-details" class="control-btn">📊 Technical Stuff</button>
+      <button id="show-about" class="control-btn">❓ What is this?</button>
       <button id="show-plots" class="control-btn">📋 Plot List</button>
       <button id="reset-view" class="control-btn">🎯 Reset View</button>
       
@@ -28,6 +28,8 @@
         <input type="number" id="nav-y" placeholder="Y" min="0" max="65535">
         <button id="nav-go" class="control-btn">Go</button>
       </div>
+      
+      <button id="toggle-details" class="control-btn">📊 Tech Stuff</button>
       
       <div class="canvas-stats">
         <span id="zoom-display">Zoom: 100%</span>
@@ -75,6 +77,48 @@
       
       <div id="plot-list-body" class="plot-list-body">
         <!-- Will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- About/What is this modal -->
+  <div id="about-modal" class="modal">
+    <div class="modal-content about-content">
+      <div class="modal-header">
+        <h2>What is this?</h2>
+        <button class="modal-close" id="close-about">&times;</button>
+      </div>
+      
+      <div class="about-body">
+        <p><strong>The Unstoppable Bitcoin Billboard (UBB)</strong> is an authorityless, censorship-resistant billboard that lives on Bitcoin.</p>
+        
+        <div class="about-section">
+          <h3>How it works:</h3>
+          <ul>
+            <li>The billboard is a virtual canvas with <strong>65,536 × 65,536 pixels</strong></li>
+            <li>Anyone can claim a rectangular area (a "plot") with a Bitcoin transaction</li>
+            <li>Each plot contains an image and optionally a URL</li>
+            <li>Each plot is bound to a <strong>deed</strong> (a 600-sat UTXO)</li>
+            <li>Whoever controls the deed controls the plot</li>
+            <li>You can transfer, update, or retry your claim</li>
+          </ul>
+        </div>
+        
+        <div class="about-section">
+          <h3>Why UBB?</h3>
+          <ul>
+            <li><strong>Supply-limited:</strong> The canvas is finite. First to claim wins.</li>
+            <li><strong>Censorship-resistant:</strong> Once placed, plots are permanent.</li>
+            <li><strong>No intermediaries:</strong> No tokens, no servers, no gatekeepers.</li>
+            <li><strong>Fee market contribution:</strong> Every action generates Bitcoin transaction fees.</li>
+          </ul>
+        </div>
+        
+        <div class="about-footer">
+          <a href="https://github.com/mysticalgareth/UBB" target="_blank" rel="noopener noreferrer" class="github-link">
+            📖 Full Protocol Specification & Tools on GitHub →
+          </a>
+        </div>
       </div>
     </div>
   </div>

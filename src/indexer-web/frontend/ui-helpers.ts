@@ -107,6 +107,26 @@ export class UIHelpers {
   }
 
   /**
+   * Show the about modal
+   */
+  static showAboutModal(): void {
+    const modal = document.getElementById('about-modal');
+    if (modal) {
+      modal.classList.add('active');
+    }
+  }
+
+  /**
+   * Close the about modal
+   */
+  static closeAboutModal(): void {
+    const modal = document.getElementById('about-modal');
+    if (modal) {
+      modal.classList.remove('active');
+    }
+  }
+
+  /**
    * Setup search functionality for plot list
    */
   private static setupPlotListSearch(): void {
@@ -247,10 +267,29 @@ export class UIHelpers {
       });
     }
     
-    // Close modal on Escape key
+    // Close about modal
+    const closeAboutBtn = document.getElementById('close-about');
+    if (closeAboutBtn) {
+      closeAboutBtn.addEventListener('click', () => {
+        this.closeAboutModal();
+      });
+    }
+    
+    // Close about modal when clicking outside
+    const aboutModal = document.getElementById('about-modal');
+    if (aboutModal) {
+      aboutModal.addEventListener('click', (e: MouseEvent) => {
+        if ((e.target as HTMLElement).id === 'about-modal') {
+          this.closeAboutModal();
+        }
+      });
+    }
+    
+    // Close modals on Escape key
     document.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         this.closePlotListModal();
+        this.closeAboutModal();
         this.hidePlotTooltip();
       }
     });
