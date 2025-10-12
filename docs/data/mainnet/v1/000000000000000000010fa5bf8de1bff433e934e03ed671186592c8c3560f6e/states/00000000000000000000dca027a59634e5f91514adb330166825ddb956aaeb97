@@ -1,0 +1,39 @@
+{
+  "blockHash": "00000000000000000000dca027a59634e5f91514adb330166825ddb956aaeb97",
+  "parentHash": "0000000000000000000080dfbff26d14a76441d4ffe936a3866c0c6427a58cce",
+  "blockHeight": 918737,
+  "plots": [
+    {
+      "txid": "156cc722280cd5dd544ebc830b93a577cefd19b74b241de09d4f2d2bc612f077",
+      "x0": 32588,
+      "y0": 32723,
+      "width": 360,
+      "height": 90,
+      "status": "PLACED",
+      "deedUTXO": "156cc722280cd5dd544ebc830b93a577cefd19b74b241de09d4f2d2bc612f077:1",
+      "imageHash": "0f6d6277c197fd2ff86db0bd5212a60d97a6dfce2c92e7e8f299c1ecb316d7a2",
+      "createdAt": 1760179216424,
+      "lastUpdated": 1760179216424,
+      "owner": "bc1qmq0nmyjm2x0lnwr6vdltu836fy0pj80yk09xka"
+    },
+    {
+      "txid": "917bb465f7e8a347968a6d5d189169e00258bf0cc0bd520e5992849d78aa1505",
+      "x0": 32500,
+      "y0": 32600,
+      "width": 100,
+      "height": 100,
+      "status": "PLACED",
+      "deedUTXO": "917bb465f7e8a347968a6d5d189169e00258bf0cc0bd520e5992849d78aa1505:1",
+      "imageHash": "3d590900664b8501b410808c41c3e85eacd37023e5c3e4d90cea410917c96b8c",
+      "createdAt": 1760179221570,
+      "lastUpdated": 1760179221570,
+      "owner": "bc1q6gjpmr98v3dzha4gwajqvh3408ym0zruhy4awp",
+      "uri": "https://www.youtube.com/watch?v=3hqXdT0nbe0"
+    }
+  ],
+  "deedUTXOs": [
+    "156cc722280cd5dd544ebc830b93a577cefd19b74b241de09d4f2d2bc612f077:1",
+    "917bb465f7e8a347968a6d5d189169e00258bf0cc0bd520e5992849d78aa1505:1"
+  ],
+  "transactionCount": 3723
+}
