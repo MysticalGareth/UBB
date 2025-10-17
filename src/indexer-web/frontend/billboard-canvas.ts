@@ -448,7 +448,12 @@ export class BillboardCanvas {
     // Touch handlers
     this.canvas.addEventListener('touchstart', (e) => {
       this.touches = Array.from(e.touches);
-      if (this.touches.length === 2) {
+      if (this.touches.length === 1) {
+        // Initialize single-finger drag
+        this.lastMouseX = this.touches[0].clientX;
+        this.lastMouseY = this.touches[0].clientY;
+      } else if (this.touches.length === 2) {
+        // Initialize two-finger pinch
         const dx = this.touches[0].clientX - this.touches[1].clientX;
         const dy = this.touches[0].clientY - this.touches[1].clientY;
         this.lastTouchDistance = Math.sqrt(dx * dx + dy * dy);
@@ -460,6 +465,7 @@ export class BillboardCanvas {
       this.touches = Array.from(e.touches);
       
       if (this.touches.length === 2) {
+        // Two-finger pinch-to-zoom
         const dx = this.touches[0].clientX - this.touches[1].clientX;
         const dy = this.touches[0].clientY - this.touches[1].clientY;
         const distance = Math.sqrt(dx * dx + dy * dy);
@@ -485,7 +491,8 @@ export class BillboardCanvas {
         
         this.lastTouchDistance = distance;
         this.render();
-      } else if (this.touches.length === 1 && this.isDragging) {
+      } else if (this.touches.length === 1) {
+        // Single-finger pan/drag
         const dx = (this.touches[0].clientX - this.lastMouseX) / this.camera.zoom;
         const dy = (this.touches[0].clientY - this.lastMouseY) / this.camera.zoom;
         
@@ -502,9 +509,6 @@ export class BillboardCanvas {
     this.canvas.addEventListener('touchend', (e) => {
       if (e.touches.length < 2) {
         this.lastTouchDistance = 0;
-      }
-      if (e.touches.length === 0) {
-        this.isDragging = false;
       }
     });
 
