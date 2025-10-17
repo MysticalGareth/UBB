@@ -20,23 +20,27 @@ export interface ClaimResult {
   hex: string;
 }
 
-export interface BitcoinClient {
+/**
+ * Bitcoin components for mainnet/testnet networks
+ * Just the core RPC components - no orchestration needed
+ */
+export interface BitcoinComponents {
   rpcClient: BitcoinRpcClient;
   walletManager: WalletManager;
   transactionBuilder: TransactionBuilder;
 }
 
 /**
- * Setup Bitcoin client components for mainnet/testnet
- * Returns core components that can be used directly
+ * Setup Bitcoin components for mainnet/testnet
+ * Just initializes the core RPC components - no orchestration needed
  */
-export async function setupBitcoinClient(config: ClaimConfig): Promise<BitcoinClient> {
+export async function setupBitcoinComponents(config: ClaimConfig): Promise<BitcoinComponents> {
   if (!config.rpcUrl) {
     throw new Error('Core RPC URL is required. Use --core-rpc-url flag.');
   }
 
   if (!config.walletName) {
-    throw new Error('Wallet name is required. Use --wallet-name flag.');
+    throw new Error('Wallet name is required for mainnet/testnet. Use --wallet-name flag.');
   }
 
   const rpcClient = new BitcoinRpcClient(config.rpcUrl);
@@ -52,12 +56,16 @@ export async function setupBitcoinClient(config: ClaimConfig): Promise<BitcoinCl
     await walletManager.setupWallet();
     await walletManager.fundWallet(); // Just checks UTXOs for mainnet/testnet
   } catch (error) {
-    throw new Error(`Failed to setup Bitcoin client for ${config.network}: ${error instanceof Error ? error.message : 'unknown'}`);
+    throw new Error(`Failed to setup Bitcoin components for ${config.network}: ${error instanceof Error ? error.message : 'unknown'}`);
   }
   
   const transactionBuilder = new TransactionBuilder(rpcClient, walletManager, config.feeRate ?? 1);
   
-  return { rpcClient, walletManager, transactionBuilder };
+  return { 
+    rpcClient, 
+    walletManager, 
+    transactionBuilder
+  };
 }
 
 /**
@@ -89,35 +97,6 @@ export async function setupRegtestOrchestrator(config: ClaimConfig): Promise<Reg
 }
 
 /**
- * Setup orchestrator for any network (regtest, mainnet, or testnet)
- * This is a convenience wrapper that returns a RegtestOrchestrator
- * (which works for all networks despite the name)
- */
-export async function setupOrchestrator(config: ClaimConfig): Promise<RegtestOrchestrator> {
-  if (!config.rpcUrl) {
-    throw new Error('Core RPC URL is required. Use --core-rpc-url flag.');
-  }
-
-  const orchestrator = new RegtestOrchestrator({
-    rpcUrl: config.rpcUrl,
-    walletName: config.walletName,
-    walletPassphrase: config.walletPassphrase,
-    createWalletIfNotExists: config.network === 'regtest',  // Only create wallet for regtest
-    fundWallet: config.network === 'regtest',  // Only fund wallet for regtest
-    autoMine: false,
-    feeRate: config.feeRate ?? 1
-  });
-
-  try {
-    await orchestrator.setup();
-  } catch (error) {
-    throw new Error(`Failed to setup ${config.network} orchestrator: ${error instanceof Error ? error.message : 'unknown'}`);
-  }
-
-  return orchestrator;
-}
-
-/**
  * Load a BMP file and return its hex representation
  */
 export function loadBMPFile(filePath: string): string {
@@ -127,45 +106,6 @@ export function loadBMPFile(filePath: string): string {
   } catch (error) {
     throw new Error(`Failed to load BMP file ${filePath}: ${error instanceof Error ? error.message : 'unknown'}`);
   }
-}
-
-/**
- * Create a single CLAIM transaction (regtest only)
- */
-export async function createClaim(
-  orchestrator: RegtestOrchestrator,
-  x: number,
-  y: number,
-  bmpHex: string,
-  uri?: string,
-  broadcast: boolean = true,
-  recipientAddress?: string
-): Promise<ClaimResult> {
-  return await orchestrator.createClaimTx(x, y, uri || '', bmpHex, broadcast, recipientAddress);
-}
-
-/**
- * Mine a block (regtest only)
- */
-export async function mineBlock(orchestrator: RegtestOrchestrator): Promise<string> {
-  return await orchestrator.mineBlock();
-}
-
-/**
- * Get tip hash from RPC client
- */
-export async function getTipHash(client: BitcoinClient | RegtestOrchestrator): Promise<string> {
-  const rpcClient = (client as BitcoinClient).rpcClient;
-  return await rpcClient.getBestBlockHash();
-}
-
-/**
- * Get genesis hash (block at specific height)
- * For regtest, this is typically block 102 (after 101 coinbase maturity blocks)
- */
-export async function getGenesisHash(client: BitcoinClient | RegtestOrchestrator, height: number = 102): Promise<string> {
-  const rpcClient = (client as BitcoinClient).rpcClient;
-  return await rpcClient.getBlockHash(height);
 }
 
 /**

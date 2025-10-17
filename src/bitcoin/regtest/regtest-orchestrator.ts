@@ -120,14 +120,11 @@ export class RegtestOrchestrator {
       return;
     }
 
-    console.log('Setting up regtest orchestrator...');
-
     // Step 1: Chain-only check - ensure node is up (no wallet RPC)
     await this.ensureRegtestNodeUp();
 
     // Step 2: Setup/load wallet (sets wallet on RPC client)
-    const walletName = await this.walletManager.setupWallet();
-    console.log(`Wallet created: ${walletName}`);
+    await this.walletManager.setupWallet();
 
     // Step 3: Fast-path - check UTXOs and mine if needed (requires wallet)
     await this.ensureWalletFunded();
@@ -142,7 +139,6 @@ export class RegtestOrchestrator {
     }
 
     this.isSetup = true;
-    console.log('Regtest orchestrator setup complete');
   }
 
   /**

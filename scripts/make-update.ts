@@ -64,11 +64,9 @@
 
 import * as path from 'path';
 import {
-  setupOrchestrator,
+  setupBitcoinComponents,
+  setupRegtestOrchestrator,
   loadBMPFile,
-  mineBlock,
-  getTipHash,
-  getGenesisHash,
   printIndexingInstructions
 } from './claim-utils';
 
@@ -236,80 +234,125 @@ async function main() {
     process.exit(1);
   }
 
-  // Setup orchestrator
-  console.log(`🔧 Setting up ${network} orchestrator...`);
-  const orchestrator = await setupOrchestrator({
-    network,
-    rpcUrl,
-    walletName,
-    walletPassphrase,
-    feeRate
-  });
-  console.log(`✅ ${network} orchestrator ready\n`);
+  // Parse deed UTXO for mainnet/testnet path
+  const [txid, voutStr] = deedUTXO!.split(':');
+  const vout = parseInt(voutStr, 10);
+  const deedInput = { txid, vout, amount: 0.000006 }; // 600 sats
 
-  // Create UPDATE transaction
-  try {
-    if (noBroadcast) {
-      console.log('📝 Building UPDATE transaction (not broadcasting)...');
-    } else {
-      console.log('📝 Creating UPDATE transaction...');
-    }
-    
-    const result = await orchestrator.createUpdateTx(x!, y!, uri || '', bmpHex, deedUTXO!, !noBroadcast, recipientAddress);
-    
-    if (noBroadcast) {
-      console.log(`✅ UPDATE transaction built:`);
-      console.log(`   Transaction ID: ${result.txid}`);
-      console.log(`   New Deed UTXO: ${result.deedUTXO}`);
-      console.log('');
-      console.log('📄 Transaction Hex:');
-      console.log(result.hex);
-      console.log('');
-      console.log('💡 To broadcast this transaction:');
-      console.log(`   bitcoin-cli sendrawtransaction ${result.hex}`);
-    } else {
-      console.log(`✅ UPDATE created:`);
-      console.log(`   Transaction ID: ${result.txid}`);
-      console.log(`   New Deed UTXO: ${result.deedUTXO}`);
-      console.log(`   Plot updated at: (${x}, ${y})`);
-    }
-    console.log('');
-  } catch (error) {
-    console.error('❌ Failed to create UPDATE:', error instanceof Error ? error.message : 'unknown');
-    await orchestrator.cleanup();
-    process.exit(1);
-  }
+  // Branch based on network type
+  if (network === 'regtest') {
+    // REGTEST: Use orchestrator for test environment management
+    console.log('🔧 Setting up regtest orchestrator...');
+    const orchestrator = await setupRegtestOrchestrator({
+      network,
+      rpcUrl,
+      walletName,
+      walletPassphrase,
+      feeRate
+    });
+    console.log('✅ Regtest orchestrator ready\n');
 
-  // Mine block (regtest only, and only if transaction was broadcast)
-  if (network === 'regtest' && !noBroadcast) {
     try {
-      console.log('⛏️  Mining block...');
-      const blockHash = await mineBlock(orchestrator);
-      console.log(`✅ Block mined: ${blockHash}`);
-      console.log('');
+      if (noBroadcast) {
+        console.log('📝 Building UPDATE transaction (not broadcasting)...');
+      } else {
+        console.log('📝 Creating UPDATE transaction...');
+      }
+      
+      const result = await orchestrator.createUpdateTx(x!, y!, uri || '', bmpHex, deedUTXO!, !noBroadcast, recipientAddress);
+      
+      if (noBroadcast) {
+        console.log(`✅ UPDATE transaction built:`);
+        console.log(`   Transaction ID: ${result.txid}`);
+        console.log(`   New Deed UTXO: ${result.deedUTXO}`);
+        console.log('');
+        console.log('📄 Transaction Hex:');
+        console.log(result.hex);
+        console.log('');
+        console.log('💡 To broadcast this transaction:');
+        console.log(`   bitcoin-cli sendrawtransaction ${result.hex}`);
+      } else {
+        console.log(`✅ UPDATE created:`);
+        console.log(`   Transaction ID: ${result.txid}`);
+        console.log(`   New Deed UTXO: ${result.deedUTXO}`);
+        console.log(`   Plot updated at: (${x}, ${y})`);
+        console.log('');
+
+        // Mine block
+        console.log('⛏️  Mining block...');
+        const blockHash = await orchestrator.mineBlock();
+        console.log(`✅ Block mined: ${blockHash}`);
+        console.log('');
+
+        // Get hashes for indexing instructions
+        const tipHash = await orchestrator.getRpcClient().getBestBlockHash();
+        const genesisHash = await orchestrator.getRpcClient().getBlockHash(102);
+        printIndexingInstructions(tipHash, genesisHash, network);
+      }
     } catch (error) {
-      console.error('❌ Failed to mine block:', error);
+      console.error('❌ Failed to create UPDATE:', error instanceof Error ? error.message : 'unknown');
       await orchestrator.cleanup();
       process.exit(1);
     }
 
-    // Get hashes for indexing instructions (regtest only)
-    const tipHash = await getTipHash(orchestrator);
-    const genesisHash = await getGenesisHash(orchestrator);
+    await orchestrator.cleanup();
+  } else {
+    // MAINNET/TESTNET: Just use Bitcoin components directly, no orchestration
+    console.log(`🔧 Setting up ${network} Bitcoin components...`);
+    const { transactionBuilder } = await setupBitcoinComponents({
+      network,
+      rpcUrl,
+      walletName,
+      walletPassphrase,
+      feeRate
+    });
+    console.log(`✅ ${network} components ready\n`);
 
-    // Print instructions
-    printIndexingInstructions(tipHash, genesisHash, network);
-  } else if (!noBroadcast) {
-    // Only print these instructions if transaction was broadcast
-    console.log('');
-    console.log('📋 Next Steps:');
-    console.log('  1. Wait for transaction to be confirmed in a block');
-    console.log('  2. Run the indexer to track the update:');
-    console.log(`     npm run indexer -- <tip-hash> <genesis-hash> --network ${network} --rpc-url <rpc-url>`);
-    console.log('');
+    try {
+      if (noBroadcast) {
+        console.log('📝 Building UPDATE transaction (not broadcasting)...');
+      } else {
+        console.log('📝 Creating UPDATE transaction...');
+      }
+      
+      const result = await transactionBuilder.buildUpdateTransaction(
+        x!,
+        y!,
+        uri || '',
+        bmpHex,
+        deedInput,
+        undefined,
+        recipientAddress,
+        !noBroadcast
+      );
+      
+      if (noBroadcast) {
+        console.log(`✅ UPDATE transaction built:`);
+        console.log(`   Transaction ID: ${result.txid}`);
+        console.log(`   New Deed UTXO: ${result.deedUTXO}`);
+        console.log('');
+        console.log('📄 Transaction Hex:');
+        console.log(result.hex);
+        console.log('');
+        console.log('💡 To broadcast this transaction:');
+        console.log(`   bitcoin-cli sendrawtransaction ${result.hex}`);
+      } else {
+        console.log(`✅ UPDATE created:`);
+        console.log(`   Transaction ID: ${result.txid}`);
+        console.log(`   New Deed UTXO: ${result.deedUTXO}`);
+        console.log(`   Plot updated at: (${x}, ${y})`);
+        console.log('');
+        console.log('📋 Next Steps:');
+        console.log('  1. Wait for transaction to be confirmed in a block');
+        console.log('  2. Run the indexer to track the update:');
+        console.log(`     npm run indexer -- <tip-hash> <genesis-hash> --network ${network} --rpc-url ${rpcUrl}`);
+      }
+      console.log('');
+    } catch (error) {
+      console.error('❌ Failed to create UPDATE:', error instanceof Error ? error.message : 'unknown');
+      process.exit(1);
+    }
   }
-
-  await orchestrator.cleanup();
 }
 
 main().catch(console.error);

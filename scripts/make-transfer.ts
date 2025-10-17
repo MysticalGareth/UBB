@@ -51,11 +51,8 @@
  */
 
 import {
-  setupBitcoinClient,
+  setupBitcoinComponents,
   setupRegtestOrchestrator,
-  mineBlock,
-  getTipHash,
-  getGenesisHash,
   printIndexingInstructions
 } from './claim-utils';
 
@@ -197,13 +194,13 @@ async function main() {
 
       // Mine block
       console.log('⛏️  Mining block...');
-      const blockHash = await mineBlock(orchestrator);
+      const blockHash = await orchestrator.mineBlock();
       console.log(`✅ Block mined: ${blockHash}`);
       console.log('');
 
       // Get hashes for indexing instructions
-      const tipHash = await getTipHash(orchestrator);
-      const genesisHash = await getGenesisHash(orchestrator);
+      const tipHash = await orchestrator.getRpcClient().getBestBlockHash();
+      const genesisHash = await orchestrator.getRpcClient().getBlockHash(102);
       printIndexingInstructions(tipHash, genesisHash, network);
 
       await orchestrator.cleanup();
@@ -213,20 +210,20 @@ async function main() {
       process.exit(1);
     }
   } else {
-    // Mainnet/Testnet: Use core components directly
-    console.log(`🔧 Setting up Bitcoin client...`);
-    const client = await setupBitcoinClient({
+    // MAINNET/TESTNET: Just use Bitcoin components directly, no orchestration
+    console.log(`🔧 Setting up ${network} Bitcoin components...`);
+    const { transactionBuilder } = await setupBitcoinComponents({
       network,
       rpcUrl,
       walletName,
       walletPassphrase,
       feeRate
     });
-    console.log(`✅ Bitcoin client ready\n`);
+    console.log(`✅ ${network} components ready\n`);
 
     try {
       console.log('📝 Creating TRANSFER transaction...');
-      const result = await client.transactionBuilder.buildTransferTransaction(
+      const result = await transactionBuilder.buildTransferTransaction(
         deedInput,
         undefined,      // changeAddress - auto-generate
         recipientAddress // deedAddress - recipient
@@ -240,7 +237,7 @@ async function main() {
       console.log('📋 Next Steps:');
       console.log('  1. Wait for transaction to be confirmed in a block');
       console.log('  2. Run the indexer to track the transfer:');
-      console.log(`     npm run indexer -- <tip-hash> <genesis-hash> --network ${network} --rpc-url <rpc-url>`);
+      console.log(`     npm run indexer -- <tip-hash> <genesis-hash> --network ${network} --rpc-url ${rpcUrl}`);
       console.log('');
     } catch (error) {
       console.error('❌ Failed to create TRANSFER:', error instanceof Error ? error.message : 'unknown');
