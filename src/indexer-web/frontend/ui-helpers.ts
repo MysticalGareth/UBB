@@ -7,6 +7,35 @@ export class UIHelpers {
   private static environment: 'mainnet' | 'testnet' | 'regtest' = 'mainnet';
 
   /**
+   * Escape HTML to prevent XSS attacks
+   */
+  private static escapeHtml(text: string): string {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  /**
+   * Sanitize URL to prevent javascript: and data: URI attacks
+   * Only allows http:, https:, and relative URLs
+   */
+  private static sanitizeUrl(url: string): string {
+    const trimmed = url.trim();
+    if (!trimmed) return '';
+    
+    // Check for dangerous protocols
+    const lower = trimmed.toLowerCase();
+    if (lower.startsWith('javascript:') || 
+        lower.startsWith('data:') || 
+        lower.startsWith('vbscript:') ||
+        lower.startsWith('file:')) {
+      return ''; // Block dangerous protocols
+    }
+    
+    return trimmed;
+  }
+
+  /**
    * Set the network environment for generating explorer URLs
    */
   static setEnvironment(environment: 'mainnet' | 'testnet' | 'regtest'): void {
@@ -25,6 +54,7 @@ export class UIHelpers {
     if (!tooltip || !ownerEl || !txidEl || !uriEl) return;
 
     // Update tooltip content - handle bricked plots specially
+    // Using textContent is safe from XSS as it doesn't parse HTML
     if (plot.status === 'BRICKED') {
       ownerEl.textContent = 'Owner: N/A (Bricked)';
       ownerEl.style.color = '#ff6b6b';
@@ -35,16 +65,22 @@ export class UIHelpers {
     
     // Add transaction link
     const mempoolUrl = this.getMempoolUrl(plot.txid);
+    const shortTxid = this.escapeHtml(plot.txid.substring(0, 8) + '...' + plot.txid.substring(plot.txid.length - 8));
     if (mempoolUrl) {
-      const shortTxid = plot.txid.substring(0, 8) + '...' + plot.txid.substring(plot.txid.length - 8);
-      txidEl.innerHTML = `TX: <a href="${mempoolUrl}" target="_blank" rel="noopener noreferrer" class="tooltip-link">${shortTxid} ↗</a>`;
+      txidEl.innerHTML = `TX: <a href="${this.escapeHtml(mempoolUrl)}" target="_blank" rel="noopener noreferrer" class="tooltip-link">${shortTxid} ↗</a>`;
     } else {
-      const shortTxid = plot.txid.substring(0, 8) + '...' + plot.txid.substring(plot.txid.length - 8);
       txidEl.innerHTML = `<span style="color: #888;">TX: ${shortTxid}</span>`;
     }
     
     if (plot.uri) {
-      uriEl.innerHTML = `<a href="${plot.uri}" target="_blank" rel="noopener noreferrer" class="tooltip-link">${plot.uri} ↗</a>`;
+      const sanitizedUrl = this.sanitizeUrl(plot.uri);
+      const escapedUrl = this.escapeHtml(plot.uri);
+      
+      if (sanitizedUrl) {
+        uriEl.innerHTML = `<a href="${this.escapeHtml(sanitizedUrl)}" target="_blank" rel="noopener noreferrer" class="tooltip-link">${escapedUrl} ↗</a>`;
+      } else {
+        uriEl.innerHTML = `<span style="color: #ff6b6b;" title="Blocked: potentially dangerous URI">${escapedUrl} ⚠️</span>`;
+      }
     } else {
       uriEl.innerHTML = '<span style="color: #888;">No URI</span>';
     }
@@ -214,29 +250,45 @@ export class UIHelpers {
    * Create HTML for a single plot list item
    */
   private static createPlotListItem(plot: PlotState): string {
-    const uriSection = plot.uri ? `
-      <div><strong>URI:</strong> <code>${plot.uri}</code></div>
-    ` : '';
+    let uriSection = '';
+    if (plot.uri) {
+      const sanitizedUrl = this.sanitizeUrl(plot.uri);
+      const escapedUrl = this.escapeHtml(plot.uri);
+      
+      if (sanitizedUrl) {
+        uriSection = `
+          <div><strong>URI:</strong> <a href="${this.escapeHtml(sanitizedUrl)}" target="_blank" rel="noopener noreferrer" class="txid-link">${escapedUrl}</a></div>
+        `;
+      } else {
+        uriSection = `
+          <div><strong>URI:</strong> <code style="color: #ff6b6b;" title="Blocked: potentially dangerous URI">${escapedUrl} ⚠️</code></div>
+        `;
+      }
+    }
     
     const imageUrl = this.imageUrlGetter ? this.imageUrlGetter(plot.txid) : '';
     
     // Create transaction link for mempool.space
     const mempoolUrl = this.getMempoolUrl(plot.txid);
+    const escapedTxid = this.escapeHtml(plot.txid);
     const txidDisplay = mempoolUrl 
-      ? `<a href="${mempoolUrl}" target="_blank" rel="noopener noreferrer" class="txid-link">${plot.txid}</a>`
-      : `<code>${plot.txid}</code>`;
+      ? `<a href="${this.escapeHtml(mempoolUrl)}" target="_blank" rel="noopener noreferrer" class="txid-link">${escapedTxid}</a>`
+      : `<code>${escapedTxid}</code>`;
+    
+    const escapedOwner = this.escapeHtml(plot.owner);
+    const escapedStatus = this.escapeHtml(plot.status);
     
     return `
       <div class="plot-list-item">
         <div class="plot-item-header">
-          <span class="plot-status ${plot.status.toLowerCase()}">${plot.status}</span>
+          <span class="plot-status ${plot.status.toLowerCase()}">${escapedStatus}</span>
         </div>
         <div class="plot-item-content">
-          <img class="plot-item-image" src="${imageUrl}" alt="Plot ${plot.txid}" />
+          <img class="plot-item-image" src="${this.escapeHtml(imageUrl)}" alt="Plot image" />
           <div class="plot-item-details">
             <div><strong>Position:</strong> <code>(${plot.x0}, ${plot.y0})</code></div>
             <div><strong>Size:</strong> <code>${plot.width}×${plot.height}</code></div>
-            <div><strong>Owner:</strong> <code>${plot.owner}</code></div>
+            <div><strong>Owner:</strong> <code>${escapedOwner}</code></div>
             <div><strong>TX ID:</strong> ${txidDisplay}</div>
             ${uriSection}
           </div>
