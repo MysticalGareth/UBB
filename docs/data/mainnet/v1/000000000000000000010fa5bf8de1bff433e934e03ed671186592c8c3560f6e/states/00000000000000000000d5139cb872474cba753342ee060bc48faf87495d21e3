@@ -1,0 +1,69 @@
+{
+  "blockHash": "00000000000000000000d5139cb872474cba753342ee060bc48faf87495d21e3",
+  "parentHash": "000000000000000000002a1f48fca617ab7c9e948fa27257bf2e1a9dbc2478f7",
+  "blockHeight": 919633,
+  "plots": [
+    {
+      "txid": "156cc722280cd5dd544ebc830b93a577cefd19b74b241de09d4f2d2bc612f077",
+      "x0": 32588,
+      "y0": 32723,
+      "width": 360,
+      "height": 90,
+      "status": "PLACED",
+      "deedUTXO": "156cc722280cd5dd544ebc830b93a577cefd19b74b241de09d4f2d2bc612f077:1",
+      "imageHash": "0f6d6277c197fd2ff86db0bd5212a60d97a6dfce2c92e7e8f299c1ecb316d7a2",
+      "createdAt": 1760179216424,
+      "lastUpdated": 1760179216424,
+      "owner": "bc1qmq0nmyjm2x0lnwr6vdltu836fy0pj80yk09xka"
+    },
+    {
+      "txid": "917bb465f7e8a347968a6d5d189169e00258bf0cc0bd520e5992849d78aa1505",
+      "x0": 32500,
+      "y0": 32600,
+      "width": 100,
+      "height": 100,
+      "status": "PLACED",
+      "deedUTXO": "917bb465f7e8a347968a6d5d189169e00258bf0cc0bd520e5992849d78aa1505:1",
+      "imageHash": "3d590900664b8501b410808c41c3e85eacd37023e5c3e4d90cea410917c96b8c",
+      "createdAt": 1760179221570,
+      "lastUpdated": 1760179221570,
+      "owner": "bc1q6gjpmr98v3dzha4gwajqvh3408ym0zruhy4awp",
+      "uri": "https://www.youtube.com/watch?v=3hqXdT0nbe0"
+    },
+    {
+      "txid": "9eafa2b6b41f3818ac31cab44ab85777e2d0f4fa7433c16b99d9849bb3e0461e",
+      "x0": 32700,
+      "y0": 32900,
+      "width": 90,
+      "height": 90,
+      "status": "PLACED",
+      "deedUTXO": "9eafa2b6b41f3818ac31cab44ab85777e2d0f4fa7433c16b99d9849bb3e0461e:1",
+      "imageHash": "92448dfe481cc24c42e28e1da31add2cedd005852efba2b49cdca71a64f47e4d",
+      "createdAt": 1760659337415,
+      "lastUpdated": 1760659337415,
+      "owner": "bc1qsjgzry6e2g58f0dgduwlhe0u4r6uj7g70emg7f",
+      "uri": "https://bitcoincore.org/en/releases/30.0/"
+    },
+    {
+      "txid": "a804a1e87f772636875d1921affd8ef0d87463f9ce0d8d3041e02669f01e119a",
+      "x0": 32900,
+      "y0": 32830,
+      "width": 200,
+      "height": 113,
+      "status": "PLACED",
+      "deedUTXO": "a804a1e87f772636875d1921affd8ef0d87463f9ce0d8d3041e02669f01e119a:2",
+      "imageHash": "209cb4642a44ba45e9e4ddf97769075a8a38b5bf8935bbc2e1c2a315f5c20609",
+      "createdAt": 1760667011897,
+      "lastUpdated": 1760667011897,
+      "owner": "bc1q0wj89m7md4cy67k6gjl6w2huaak9zm4c844s22",
+      "uri": "https://x.com/adam3us"
+    }
+  ],
+  "deedUTXOs": [
+    "156cc722280cd5dd544ebc830b93a577cefd19b74b241de09d4f2d2bc612f077:1",
+    "917bb465f7e8a347968a6d5d189169e00258bf0cc0bd520e5992849d78aa1505:1",
+    "9eafa2b6b41f3818ac31cab44ab85777e2d0f4fa7433c16b99d9849bb3e0461e:1",
+    "a804a1e87f772636875d1921affd8ef0d87463f9ce0d8d3041e02669f01e119a:2"
+  ],
+  "transactionCount": 3552
+}
