@@ -2,6 +2,6 @@
 window.UBB_CONFIG = {
   environment: "mainnet",
   genesisHash: "000000000000000000010fa5bf8de1bff433e934e03ed671186592c8c3560f6e",
-  tipHash: "00000000000000000000bbec291f24c7ec0e8b6e67a37302834f54bca0ba2b8c",
+  tipHash: "000000000000000000009ac40c64dd425fd33b048abfc761448adfdddf40bedb",
   dataPath: "data/mainnet/v1/000000000000000000010fa5bf8de1bff433e934e03ed671186592c8c3560f6e"
 };
